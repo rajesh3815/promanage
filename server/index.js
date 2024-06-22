@@ -3,9 +3,12 @@ const cors = require("cors");
 require("dotenv").config();
 const app = express();
 const mongoose = require("mongoose");
+const userRouter = require("./routers/auth.routes");
 const PORT = process.env.PORT || 4000;
 app.use(express.json());
 app.use(cors());
+
+app.use("/api/v1/user", userRouter);
 // for API health checking
 app.get("/api/health", (req, res) => {
   res.send("API is working fine");

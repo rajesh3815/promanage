@@ -1,0 +1,36 @@
+.mainDiv {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+
+}
+
+.leftDiv {
+    background-color: rgba(23, 162, 184, 1);
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.imgDiv {
+    position: relative;
+    z-index: 1;
+}
+
+.imgDiv img {
+    width: 25rem;
+    height: 30rem;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgb(17 133 151);
+    width: 15rem;
+    height: 15rem;
+    left: 5rem;
+    bottom: 9rem;
+    z-index: -1;
+}
