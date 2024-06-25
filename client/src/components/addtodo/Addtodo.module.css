@@ -1,0 +1,72 @@
+.mainContainer {
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(48, 61, 67, 0.55);
+}
+
+.innerDiv {
+    background: white;
+    border-radius: 7px;
+    padding: 25px 26px;
+}
+
+.innerDiv input {
+    width: 30rem;
+    height: 1.7rem;
+    border-radius: 5px;
+    border: 1px solid;
+    outline: none;
+    padding: 4px;
+    border-color: rgba(77, 64, 85, 0.1);
+    color: gray;
+    margin-top: 7px;
+    margin-bottom: 1.2rem;
+}
+
+.chips {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.priorityChip {
+    display: flex;
+    gap: 10px;
+}
+
+.priorityChip span {
+    font-size: 14px;
+    color: rgba(118, 117, 117, 1);
+    background: rgba(238, 236, 236, 1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-radius: 5px;
+    padding: 6px 9px;
+}
+
+.circle {
+    height: 8px;
+    width: 8px;
+    border-radius: 50%;
+}
+
+.red {
+    background-color: red;
+}
+
+.sky {
+    background: rgba(24, 176, 255, 1);
+
+}
+
+.green {
+    background-color: green;
+}
