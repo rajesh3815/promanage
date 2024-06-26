@@ -10,6 +10,6 @@ const assignSchema = new mongoose.Schema(
   { timestamps: { createdAt: "", updatedAt: "" } }
 );
 
-const assign = new mongoose.model("todo", assignSchema);
+const assign = new mongoose.model("assign", assignSchema);
 
 module.exports = assign;

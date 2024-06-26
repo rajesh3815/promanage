@@ -1,21 +1,58 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useId } from "react";
 import Style from "./Addtodo.module.css";
 const options = ["HIGH PRIORITY", "MODERATE PRIORITY", "LOW PRIORITY"];
 import { RiArrowDropUpLine, RiArrowDropDownLine } from "react-icons/ri";
+import { createTodo, getAllPeople } from "../../api/task";
 
-const Addtodo = () => {
-  const [selectedOption, setSelectedOption] = useState(); //for storing priority
+const Addtodo = ({ setAddtodoform }) => {
+  const [selectedOption, setSelectedOption] = useState(""); //for storing priority
   const [title, setTitle] = useState(""); //for storing title
-  const [assign, setAssign] = useState(["a", "d"]);
+  const [assign, setAssign] = useState([]);
   const [assignPeople, setAssignPeople] = useState("");
-  const [tasks, setTasks] = useState([]); //for tasks
-
+  const [tasks, setTasks] = useState([
+    { checked: false, id: 1719414986792, text: "" },
+  ]); //for tasks
   const [isOpen, setIsOpen] = useState(false);
+  const [err, setErr] = useState("");
+  useEffect(() => {
+    getPeopledata();
+  }, []);
+  //getting all assigne peoples
+  const getPeopledata = async () => {
+    const data = await getAllPeople();
+    setAssign(data?.peoples);
+  };
+
+  //setup for task handle---------------------------
+  const handleCheck = (id) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === id ? { ...task, checked: !task.checked } : task
+      )
+    );
+  };
+
+  const handleDelete = (id) => {
+    setTasks(tasks.filter((task) => task.id !== id));
+  };
+
+  const handleAddNew = () => {
+    const newTask = { id: Date.now(), text: "", checked: false };
+    setTasks([...tasks, newTask]);
+  };
+
+  const handleTextChange = (id, newText) => {
+    setTasks(
+      tasks.map((task) => (task.id === id ? { ...task, text: newText } : task))
+    );
+  };
+  const checkedCount = tasks.filter((task) => task.checked).length;
+  //+-----------------------------------------------------------//
 
   // setting up date----
   const [dueDate, setDueDate] = useState("");
   const dateInputRef = useRef(null);
-
   const handleDateChange = (event) => {
     setDueDate(event.target.value);
   };
@@ -25,7 +62,41 @@ const Addtodo = () => {
   //--------------------
   const handleOptionClick = (option) => {
     setSelectedOption(option);
-  };//handeling for priority check
+  }; //handeling for priority check
+
+  //form submit handel
+  const clickHandeler = () => {
+    if (!title) {
+      setErr("Title field is required");
+      return;
+    } else if (!dueDate) {
+      setErr("Date field is required");
+      return;
+    } else if (!selectedOption) {
+      setErr("Priority field is required");
+      return;
+    } else {
+      setErr("");
+    }
+    let flg = false;
+    for (let i = 0; i < tasks.length; i++) {
+      if (tasks[i].text.trim() === "") {
+        flg = true;
+        setErr("All fields is required");
+      }
+    }
+    if (flg) return;
+    setErr("");
+    const data = createTodo(
+      title,
+      selectedOption,
+      dueDate,
+      assignPeople,
+      tasks
+    );
+    console.log("success");
+  };
+
   return (
     <div className={Style.mainContainer}>
       <div className={Style.innerDiv}>
@@ -33,6 +104,9 @@ const Addtodo = () => {
           Title <span style={{ color: "red", fontSize: "20px" }}>*</span>
         </p>
         <input
+          value={title}
+          name="title"
+          onChange={(e) => setTitle(e.target.value)}
           className={Style.innerDivinp}
           type="text"
           placeholder="Enter Task Title"
@@ -44,7 +118,14 @@ const Addtodo = () => {
           </p>
           <div className={Style.priorityChip}>
             {options.map((option) => (
-              <span key={option} onClick={() => handleOptionClick(option)}>
+              <span
+                key={option}
+                onClick={() => handleOptionClick(option)}
+                style={{
+                  backgroundColor:
+                    option === selectedOption ? "rgb(213 210 210)" : "",
+                }}
+              >
                 <div
                   className={`${Style.circle} ${
                     option === "HIGH PRIORITY"
@@ -52,7 +133,7 @@ const Addtodo = () => {
                       : option === "MODERATE PRIORITY"
                       ? Style.sky
                       : Style.green
-                  }`}
+                  } `}
                 ></div>
                 {option}
               </span>
@@ -62,30 +143,69 @@ const Addtodo = () => {
         <div>
           <div className={Style.dropdownButton}>
             <p>Assign to</p>
-            {assign}{" "}
-            <span onClick={() => setIsOpen(!isOpen)} className={Style.arrow}>
-              {isOpen ? <RiArrowDropUpLine /> : <RiArrowDropDownLine />}
-            </span>
+            <div className={Style.assign}>
+              {assignPeople ? assignPeople : "Add a assignee"}{" "}
+              <span onClick={() => setIsOpen(!isOpen)} className={Style.arrow}>
+                {isOpen ? (
+                  <RiArrowDropUpLine style={{ fontSize: "2rem" }} />
+                ) : (
+                  <RiArrowDropDownLine style={{ fontSize: "2rem" }} />
+                )}
+              </span>
+            </div>
           </div>
-          {isOpen && (
-            <ul className={Style.dropdownMenu}>
-              {assign.map((option) => (
-                <li key={option} onClick={() => {}}>
-                  {option}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-        <div className={Style.tasks}>
-          <p>
-            Checklist (1/3) <span style={{ color: "red" }}>*</span>
-          </p>
-          <div className={Style.taskdiv}>
-            <input type="text" />
+          <div className={Style.dropDiv}>
+            {isOpen && (
+              <ul className={Style.dropdownMenu}>
+                {assign?.map((assign) => (
+                  <li key={assign._id}>
+                    <span>{assign.people?.slice(0, 2)}</span>
+                    {assign.people}
+                    <button onClick={() => setAssignPeople(assign.people)}>
+                      Assign
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          <span className={Style.addBtn}>+ Add New</span>
         </div>
+
+        {/* task div */}
+        <div className={Style.checks}>
+          <h3>
+            Checklist ({checkedCount}/{tasks.length}){" "}
+            <span className={Style.required}>*</span>
+          </h3>
+          <div className={Style.tasks}>
+            {tasks.map((task) => (
+              <div key={task.id} className={Style.task}>
+                <input
+                  type="checkbox"
+                  checked={task.checked}
+                  onChange={() => handleCheck(task.id)}
+                />
+                <input
+                  type="text"
+                  className={`${Style.taskText}`}
+                  value={task.text}
+                  onChange={(e) => handleTextChange(task.id, e.target.value)}
+                  placeholder="Enter task"
+                />
+                <button
+                  className={Style.deleteButton}
+                  onClick={() => handleDelete(task.id)}
+                >
+                  🗑️
+                </button>
+              </div>
+            ))}
+            <button className={Style.addButton} onClick={handleAddNew}>
+              + Add New
+            </button>
+          </div>
+        </div>
+
         <div className={Style.btnDiv}>
           {/* date valu */}
           <div className={Style.dueDatePicker}>
@@ -111,6 +231,7 @@ const Addtodo = () => {
 
           <div className={Style.btnDivright}>
             <button
+              onClick={() => setAddtodoform(false)}
               style={{
                 color: "rgba(207, 54, 54, 1)",
                 border: "1px solid rgba(207, 54, 54, 1)",
@@ -119,6 +240,7 @@ const Addtodo = () => {
               Cancel
             </button>
             <button
+              onClick={clickHandeler}
               style={{
                 color: "white",
                 background: "rgba(23, 162, 184, 1)",
@@ -129,6 +251,7 @@ const Addtodo = () => {
             </button>
           </div>
         </div>
+        <p className={Style.errMessage}>{err}</p>
       </div>
     </div>
   );
