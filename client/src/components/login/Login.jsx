@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import Style from "./Login.module.css";
 import { CiLock } from "react-icons/ci";
 import { CiMail } from "react-icons/ci";
+import { useNavigate } from "react-router-dom";
 import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
+import { loginUser } from "../../auth/auth";
 const Login = ({ setToggleLogin }) => {
+  const nav = useNavigate();
   const [togglPassword, setTogglPassword] = useState(false);
   const [formData, setFormdata] = useState({
     password: "",
@@ -19,12 +22,10 @@ const Login = ({ setToggleLogin }) => {
     const { name, value } = e.target;
     setFormdata({ ...formData, [name]: value });
   };
-  const registerHandeler = (e) => {
+  const loginHandeler = async (e) => {
     e.preventDefault();
-
     const l = e.target.length;
     let flg = false;
-    console.log(l);
     for (let i = 0; i < l - 1; i++) {
       const { name } = e.target[i];
 
@@ -42,7 +43,16 @@ const Login = ({ setToggleLogin }) => {
     if (flg) return;
     setErrordata({ password: "", email: "" });
 
-    console.log(formData);
+    const loginData = await loginUser(formData);
+    if (loginData === 400) {
+      console.log("wrong password");
+      return;
+    }
+    if (loginData === 500) {
+      console.log("user not exist");
+      return;
+    }
+    nav("/dashboard");
   };
 
   return (
@@ -56,7 +66,7 @@ const Login = ({ setToggleLogin }) => {
       >
         Log in
       </h2>
-      <form onSubmit={registerHandeler}>
+      <form onSubmit={loginHandeler}>
         <div className={Style.inputDiv}>
           <span style={{ marginTop: "3px" }}>
             <CiMail

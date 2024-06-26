@@ -9,7 +9,7 @@ const Board = () => {
   const [selectedOption, setSelectedOption] = useState("This week");
   const [isOpen, setIsOpen] = useState(false);
   const [addpplmodal, setAddpplmodal] = useState(false);
-  const [addtodoform, setAddtodoform] = useState(true);
+  const [addtodoform, setAddtodoform] = useState(false);
   const formatDate = () => {
     const newDate = new Date();
 

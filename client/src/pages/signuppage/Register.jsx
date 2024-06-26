@@ -7,6 +7,7 @@ import { CiMail } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
 import Login from "../../components/login/Login";
+import { registerUser } from "../../auth/auth";
 const Register = () => {
   const [toggleLogin, setToggleLogin] = useState(false);
   const [togglPassword, setTogglPassword] = useState(false);
@@ -27,9 +28,8 @@ const Register = () => {
     const { name, value } = e.target;
     setFormdata({ ...formData, [name]: value });
   };
-  const registerHandeler = (e) => {
+  const registerHandeler = async (e) => {
     e.preventDefault();
-
     const l = e.target.length;
     let flg = false;
     for (let i = 0; i < l - 1; i++) {
@@ -50,7 +50,6 @@ const Register = () => {
     if (flg) return;
     setErrordata({ name: "", password: "", email: "" });
     if (formData.password !== formData.confirmpassword) {
-      console.log("l");
       setErrordata((prev) => {
         return { ...prev, confirmpassword: "password not matching" };
       });
@@ -60,7 +59,12 @@ const Register = () => {
         return { ...prev, confirmpassword: "" };
       });
     }
-
+    const regData = await registerUser(formData);
+    if (regData === 2) {
+      console.log("user Already exist");
+      return;
+    }
+    setToggleLogin(true);
     console.log(formData);
   };
   return (
@@ -108,7 +112,9 @@ const Register = () => {
                   onChange={changeHandeler}
                 />
               </div>
-              <p style={{ color: "red" }}>{errordata.name}</p>
+              <p style={{ color: "red", marginBottom: "10px" }}>
+                {errordata.name}
+              </p>
               <div className={Style.inputDiv}>
                 <span style={{ marginTop: "3px" }}>
                   <CiMail
@@ -123,7 +129,7 @@ const Register = () => {
                   onChange={changeHandeler}
                 />
               </div>
-              <p style={{ color: "red", marginTop: "1px" }}>
+              <p style={{ color: "red", marginBottom: "10px" }}>
                 {errordata.email}
               </p>
               <div className={Style.inputDiv}>
@@ -161,7 +167,7 @@ const Register = () => {
                   )}
                 </span>
               </div>
-              <p style={{ color: "red", marginTop: "1px" }}>
+              <p style={{ color: "red", marginBottom: "10px" }}>
                 {errordata.confirmpassword}
               </p>
 
@@ -200,7 +206,7 @@ const Register = () => {
                   )}
                 </span>
               </div>
-              <p style={{ color: "red", marginTop: "1px" }}>
+              <p style={{ color: "red", marginBottom: "10px" }}>
                 {errordata.password}
               </p>
               <div className={Style.formFooter}>

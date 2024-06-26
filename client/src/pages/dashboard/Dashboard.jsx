@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Style from "./Dashboard.module.css";
 import logo from "../../assets/codesandbox.svg";
 import layout from "../../assets/layout.svg";
@@ -8,9 +8,18 @@ import logout from "../../assets/Logout.svg";
 import Board from "../../components/board/Board";
 import Analytics from "../../components/analytics/Analytics";
 import Setting from "../../components/setting/Setting";
+import Logout from "../../components/logoutmodal/Logout";
+import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
+  const nav = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      nav("/");
+    }
+  }, []);
   const [activeMenu, setActiveMenu] = useState("Board");
-
+  const [isLogout, setIsLogout] = useState(false);
   const renderContent = () => {
     switch (activeMenu) {
       case "Board":
@@ -25,42 +34,45 @@ const Dashboard = () => {
   };
 
   return (
-    <div className={Style.mainContainer}>
-      <div className={Style.menuDiv}>
-        <div className={Style.header}>
-          {" "}
-          <img src={logo} alt="" /> <p>Pro Manage</p>
+    <>
+      <div className={Style.mainContainer}>
+        <div className={Style.menuDiv}>
+          <div className={Style.header}>
+            {" "}
+            <img src={logo} alt="" /> <p>Pro Manage</p>
+          </div>
+          <span
+            onClick={() => setActiveMenu("Board")}
+            className={`${Style.chip} ${
+              activeMenu === "Board" ? Style.activechip : ""
+            }`}
+          >
+            <img src={layout} alt="" /> <p>Board</p>
+          </span>
+          <span
+            onClick={() => setActiveMenu("Analytics")}
+            className={`${Style.chip} ${
+              activeMenu === "Analytics" ? Style.activechip : ""
+            }`}
+          >
+            <img src={database} alt="" /> <p>Analytics</p>
+          </span>
+          <span
+            onClick={() => setActiveMenu("Settings")}
+            className={`${Style.chip} ${
+              activeMenu === "Settings" ? Style.activechip : ""
+            }`}
+          >
+            <img src={setting} alt="" /> <p>Settings</p>
+          </span>
+          <span onClick={() => setIsLogout(true)} className={Style.chipLogout}>
+            <img src={logout} alt="" /> <p>Log out</p>
+          </span>
         </div>
-        <span
-          onClick={() => setActiveMenu("Board")}
-          className={`${Style.chip} ${
-            activeMenu === "Board" ? Style.activechip : ""
-          }`}
-        >
-          <img src={layout} alt="" /> <p>Board</p>
-        </span>
-        <span
-          onClick={() => setActiveMenu("Analytics")}
-          className={`${Style.chip} ${
-            activeMenu === "Analytics" ? Style.activechip : ""
-          }`}
-        >
-          <img src={database} alt="" /> <p>Analytics</p>
-        </span>
-        <span
-          onClick={() => setActiveMenu("Settings")}
-          className={`${Style.chip} ${
-            activeMenu === "Settings" ? Style.activechip : ""
-          }`}
-        >
-          <img src={setting} alt="" /> <p>Settings</p>
-        </span>
-        <span className={Style.chipLogout}>
-          <img src={logout} alt="" /> <p>Log out</p>
-        </span>
+        <div className={Style.contentDiv}>{renderContent()}</div>
       </div>
-      <div className={Style.contentDiv}>{renderContent()}</div>
-    </div>
+      {isLogout ? <Logout setIsLogout={setIsLogout} /> : ""}
+    </>
   );
 };
 

@@ -16,7 +16,7 @@
     padding: 25px 26px;
 }
 
-.innerDiv input {
+.innerDivinp  {
     width: 30rem;
     height: 1.7rem;
     border-radius: 5px;
@@ -27,6 +27,8 @@
     color: gray;
     margin-top: 7px;
     margin-bottom: 1.2rem;
+    box-shadow: 0px 1px 2px 0px rgba(77, 64, 85, 0.1);
+
 }
 
 .chips {
@@ -41,7 +43,7 @@
 }
 
 .priorityChip span {
-    font-size: 14px;
+    font-size: 9.5px;
     color: rgba(118, 117, 117, 1);
     background: rgba(238, 236, 236, 1);
     cursor: pointer;
@@ -70,3 +72,64 @@
 .green {
     background-color: green;
 }
+
+.dropdownButton {
+    display: flex;
+}
+
+.tasks p {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+    text-align: left;
+
+}
+
+.addBtn {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 19.36px;
+    text-align: center;
+    color: rgba(118, 117, 117, 1);
+    cursor: pointer;
+}
+
+.btnDiv {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+.btnDiv button {
+    font-weight: 600;
+    outline: none;
+    border: none;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    height: 2rem;
+    width: 7rem;
+    background-color: white;
+    box-shadow: 0px 2px 12px 0px rgba(130, 105, 140, 0.2);
+}
+
+.btnDivright {
+    display: flex;
+    gap: 10px;
+}
+.dueDatePicker {
+    position: relative;
+    display: inline-block;
+  }
+  
+  
+  
+  .dueDateInput {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0; /* Hide the input field */
+    pointer-events: none; /* Prevent interaction */
+  }
+  
