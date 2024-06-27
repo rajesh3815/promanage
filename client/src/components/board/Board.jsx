@@ -1,15 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Style from "./Board.module.css";
 import people from "../../assets/people.svg";
 import collapse from "../../assets/codicon_collapse-all.svg";
 import Addmodal from "../addpeoplemodal/Addmodal";
 import Addtodo from "../addtodo/Addtodo";
+import { getAlltasks } from "../../api/task";
+import Card from "../taskcard/Card";
 const options = ["Today", "This week", "This month"];
 const Board = () => {
   const [selectedOption, setSelectedOption] = useState("This week");
   const [isOpen, setIsOpen] = useState(false);
   const [addpplmodal, setAddpplmodal] = useState(false);
-  const [addtodoform, setAddtodoform] = useState(true);
+  const [addtodoform, setAddtodoform] = useState(false);
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    getTaskAll();
+  }, []);
+  //getting all tasks through api call
+  const getTaskAll = async () => {
+    const data = await getAlltasks();
+    setTasks(data.tasks);
+  };
+
   const formatDate = () => {
     const newDate = new Date();
 
@@ -98,6 +110,15 @@ const Board = () => {
                 </span>
                 <img src={collapse} alt="" />
               </span>
+            </div>
+            <div className={Style.cardContainer}>
+              {tasks?.map((task, index) => {
+                return (
+                  <div key={task._id}>
+                    <Card  task={task} />
+                  </div>
+                );
+              })}
             </div>
           </div>
           <div className={Style.progressDiv}>

@@ -1,8 +1,10 @@
 const express = require("express");
 const { verifyToken } = require("../middleware/VerifyToken");
-const { addTodo } = require("../controllers/todo");
+const { addTodo, getAlltodo, getAnalytics, getTaskById } = require("../controllers/todo");
 const todoRouter = express.Router();
 
 todoRouter.post("/addtodo",verifyToken,addTodo);
-
+todoRouter.get("/getAlltodo",verifyToken,getAlltodo);
+todoRouter.get("/getAnalytics",verifyToken,getAnalytics);
+todoRouter.get("/gettaskById/:id",getTaskById);
 module.exports = todoRouter;

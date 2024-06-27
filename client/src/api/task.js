@@ -53,3 +53,40 @@ export const createTodo = async (
     return error;
   }
 };
+
+export const getAlltasks = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.get(`${staticUrl}/api/v1/todo/getAlltodo`);
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const getAnalytics = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.get(`${staticUrl}/api/v1/todo/getAnalytics`);
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const getTaskbyid=async(id)=>{
+  try {
+    const res = await axios.get(`${staticUrl}/api/v1/todo/gettaskById/${id}`);
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+}

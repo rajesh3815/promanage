@@ -80,4 +80,47 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const updateUser = async (req, res) => {
+  const { name, password, email } = req.body;
+  const userId = req.userId; 
+  if (!name || !password || !email) {
+    return res.status(400).send({
+      message: "All fields are required",
+      status: 0,
+    });
+  }
+
+  try {
+    const userToUpdate = await user.findById(userId);
+    if (!userToUpdate) {
+      return res.status(404).send({
+        message: "User not found",
+        status: 0,
+      });
+    }
+
+    // Update user details
+    userToUpdate.name = name;
+    userToUpdate.email = email;
+
+    if (password) {
+      const encryptedPassword = await bcrypt.hash(password, 10);
+      userToUpdate.password = encryptedPassword;
+    }
+
+    await userToUpdate.save();
+
+    res.send({
+      message: "User updated successfully",
+      status: 1,
+    });
+  } catch (error) {
+    res.status(400).send({
+      message: "Error updating user",
+      status: 0,
+    });
+    console.log("Error from updateUser:)", error);
+  }
+};
+
+module.exports = { registerUser, loginUser ,updateUser};

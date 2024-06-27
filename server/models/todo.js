@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const todoSchema = new mongoose.Schema(
   {
+    userId: {
+    type: mongoose.ObjectId,
+    required: true,
+  },
     taskName: {
       type: String,
       require: true,
@@ -20,6 +24,10 @@ const todoSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
+    todoStatus:{
+      type: String,
+      default: "todo",
+    }
   },
   { timestamps: { createdAt: "", updatedAt: "" } }
 );

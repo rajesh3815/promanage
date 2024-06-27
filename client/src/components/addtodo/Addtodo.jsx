@@ -10,9 +10,7 @@ const Addtodo = ({ setAddtodoform }) => {
   const [title, setTitle] = useState(""); //for storing title
   const [assign, setAssign] = useState([]);
   const [assignPeople, setAssignPeople] = useState("");
-  const [tasks, setTasks] = useState([
-    { checked: false, id: 1719414986792, text: "" },
-  ]); //for tasks
+  const [tasks, setTasks] = useState([]); //for tasks
   const [isOpen, setIsOpen] = useState(false);
   const [err, setErr] = useState("");
   useEffect(() => {
@@ -68,9 +66,6 @@ const Addtodo = ({ setAddtodoform }) => {
   const clickHandeler = () => {
     if (!title) {
       setErr("Title field is required");
-      return;
-    } else if (!dueDate) {
-      setErr("Date field is required");
       return;
     } else if (!selectedOption) {
       setErr("Priority field is required");
