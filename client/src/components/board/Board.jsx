@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Style from "./Board.module.css";
 import people from "../../assets/people.svg";
 import collapse from "../../assets/codicon_collapse-all.svg";
@@ -6,16 +6,25 @@ import Addmodal from "../addpeoplemodal/Addmodal";
 import Addtodo from "../addtodo/Addtodo";
 import { getAlltasks } from "../../api/task";
 import Card from "../taskcard/Card";
+import Backcard from "../backlogcard/Backcard";
+import Progcard from "../progresscard/Progcard";
+import Donecard from "../donecard/Donecard";
+import { taskContext } from "../../TaskContext";
 const options = ["Today", "This week", "This month"];
 const Board = () => {
+  const { taskgets } = useContext(taskContext);
   const [selectedOption, setSelectedOption] = useState("This week");
   const [isOpen, setIsOpen] = useState(false);
   const [addpplmodal, setAddpplmodal] = useState(false);
   const [addtodoform, setAddtodoform] = useState(false);
+  const [collBacklog, setCollBacklog] = useState(false);
+  const [colltodo, setColltodo] = useState(false);
+  const [collProgress, setCollProgress] = useState(false);
+  const [collDone, setCollDone] = useState(false);
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
     getTaskAll();
-  }, []);
+  }, [taskgets]);
   //getting all tasks through api call
   const getTaskAll = async () => {
     const data = await getAlltasks();
@@ -50,6 +59,9 @@ const Board = () => {
   const handleOptionClick = (option) => {
     setSelectedOption(option);
     setIsOpen(false);
+  };
+  const collapseHandler = () => {
+    setCollapseAll(!collapseAll);
   };
   return (
     <>
@@ -89,15 +101,33 @@ const Board = () => {
             </div>
           </div>
         </div>
+
         <div className={Style.content}>
+          {/* backlog section */}
           <div className={Style.backlogDiv}>
             <div className={Style.inner}>
               <p>Backlog</p>{" "}
-              <span>
+              <span
+                onClick={() => {
+                  setCollBacklog(!collBacklog);
+                }}
+              >
                 <img src={collapse} alt="" />
               </span>
             </div>
+            <div className={Style.cardContainer}>
+              {tasks?.map((task, index) => {
+                return (
+                  <div key={task._id}>
+                    {task.todoStatus === "backlog" && (
+                      <Backcard task={task} collapseAll={collBacklog} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
+          {/* todoDiv section */}
           <div className={Style.todoDiv}>
             <div className={Style.inner}>
               <p>To do</p>{" "}
@@ -108,6 +138,36 @@ const Board = () => {
                 >
                   +
                 </span>
+                <img
+                  onClick={() => {
+                    setColltodo(!colltodo);
+                  }}
+                  src={collapse}
+                  alt=""
+                />
+              </span>
+            </div>
+            <div className={Style.cardContainer}>
+              {tasks?.map((task, index) => {
+                return (
+                  <div key={task._id}>
+                    {task.todoStatus === "todo" && (
+                      <Card task={task} collapseAll={colltodo} />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          {/* progressDiv section */}
+          <div className={Style.progressDiv}>
+            <div className={Style.inner}>
+              <p>In progress</p>{" "}
+              <span
+                onClick={() => {
+                  setCollProgress(!collProgress);
+                }}
+              >
                 <img src={collapse} alt="" />
               </span>
             </div>
@@ -115,26 +175,36 @@ const Board = () => {
               {tasks?.map((task, index) => {
                 return (
                   <div key={task._id}>
-                    <Card  task={task} />
+                    {task.todoStatus === "progress" && (
+                      <Progcard task={task} collapseAll={collProgress} />
+                    )}
                   </div>
                 );
               })}
             </div>
           </div>
-          <div className={Style.progressDiv}>
-            <div className={Style.inner}>
-              <p>In progress</p>{" "}
-              <span>
-                <img src={collapse} alt="" />
-              </span>
-            </div>
-          </div>
+          {/* done section */}
           <div className={Style.doneDiv}>
             <div className={Style.inner}>
               <p>Done</p>{" "}
-              <span>
+              <span
+                onClick={() => {
+                  setCollDone(!collDone);
+                }}
+              >
                 <img src={collapse} alt="" />
               </span>
+            </div>
+            <div className={Style.cardContainer}>
+              {tasks?.map((task, index) => {
+                return (
+                  <div key={task._id}>
+                    {task.todoStatus === "done" && (
+                      <Donecard task={task} collapseAll={collDone} />
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>

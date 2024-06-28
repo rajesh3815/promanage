@@ -61,6 +61,7 @@ const getAnalytics = async (req, res) => {
     todo: 0,
     inProgress: 0,
     done: 0,
+    deuDat: 0,
   };
 
   try {
@@ -86,6 +87,9 @@ const getAnalytics = async (req, res) => {
       } else if (task.todoStatus === "backlog") {
         analytics.backlog += 1;
       }
+      if (task.createdDt) {
+        analytics.deuDat += 1;
+      }
     });
 
     // Send the analytics object as a response
@@ -103,7 +107,7 @@ const getAnalytics = async (req, res) => {
     });
   }
 };
-const getTaskById = async (req,res) => {
+const getTaskById = async (req, res) => {
   const { id } = req.params;
   if (!id) {
     return res.status(400).json({
@@ -112,12 +116,12 @@ const getTaskById = async (req,res) => {
     });
   }
   try {
-    const task=await todo.findOne({_id:id})
+    const task = await todo.findOne({ _id: id });
     res.json({
       status: 1,
       message: "Success",
-      task
-    })
+      task,
+    });
   } catch (error) {
     console.error("Error getting task by id:", error);
     res.status(500).json({
@@ -127,4 +131,108 @@ const getTaskById = async (req,res) => {
     });
   }
 };
-module.exports = { addTodo, getAlltodo, getAnalytics,getTaskById };
+const getFilterData = async (req, res) => {
+  const { filterType } = req.body;
+  const userId = req.userId;
+  if (!filterType) {
+    return res.status(400).json({
+      status: 0,
+      message: "no filter",
+    });
+  }
+  try {
+    let filter = { userId };
+
+    const now = new Date();
+    const offset = 5.5 * 60 * 60 * 1000;
+
+    const startOfDayIST = new Date(now);
+    startOfDayIST.setUTCHours(0, 0, 0, 0);
+    startOfDayIST.setTime(startOfDayIST.getTime() + offset);
+
+    const endOfDayIST = new Date(startOfDayIST);
+    endOfDayIST.setDate(startOfDayIST.getDate() + 1);
+
+    const startOfWeekIST = new Date(startOfDayIST);
+    startOfWeekIST.setDate(
+      startOfWeekIST.getDate() - startOfWeekIST.getUTCDay()
+    );
+
+    const endOfWeekIST = new Date(startOfWeekIST);
+    endOfWeekIST.setDate(startOfWeekIST.getDate() + 7);
+
+    const startOfMonthIST = new Date(now);
+    startOfMonthIST.setUTCDate(1);
+    startOfMonthIST.setUTCHours(0, 0, 0, 0);
+    startOfMonthIST.setTime(startOfMonthIST.getTime() + offset);
+
+    const endOfMonthIST = new Date(startOfMonthIST);
+    endOfMonthIST.setUTCMonth(startOfMonthIST.getUTCMonth() + 1);
+
+    switch (filterType) {
+      case "today":
+        filter.createdAt = { $gte: startOfDayIST, $lt: endOfDayIST };
+        break;
+      case "this week":
+        filter.createdAt = { $gte: startOfWeekIST, $lt: endOfWeekIST };
+        break;
+      case "this month":
+        filter.createdAt = { $gte: startOfMonthIST, $lt: endOfMonthIST };
+        break;
+      default:
+        break;
+    }
+    console.log(filter);
+    const tasks = await todo.find(filter);
+    res.status(200).json({ status: 1, message: "Success", tasks });
+  } catch (error) {
+    console.error("Error in getFilterData:", error);
+    res.status(500).json({
+      status: 0,
+      message: "Error in getFilterData",
+      error: error.message,
+    });
+  }
+};
+
+const editTask = async (req, res) => {
+  const { status } = req.body;
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({
+      status: 1,
+      message: "No id",
+    });
+  }
+  if (!status) {
+    return res.status(400).send({
+      message: "status field is required",
+      status: 0,
+    });
+  }
+  try {
+    const taskUpdate = await todo.findOne({ _id: id });
+    taskUpdate.todoStatus = status;
+    await taskUpdate.save();
+    res.json({
+      status: 1,
+      message: " edit Success",
+    });
+  } catch (error) {
+    console.error("Error in edit task:", error);
+    res.status(500).json({
+      status: 0,
+      message: "Error in edit task id",
+      error: error.message,
+    });
+  }
+};
+
+module.exports = {
+  addTodo,
+  getAlltodo,
+  getAnalytics,
+  getTaskById,
+  getFilterData,
+  editTask,
+};

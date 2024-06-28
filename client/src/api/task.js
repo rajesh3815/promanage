@@ -80,7 +80,7 @@ export const getAnalytics = async () => {
   }
 };
 
-export const getTaskbyid=async(id)=>{
+export const getTaskbyid = async (id) => {
   try {
     const res = await axios.get(`${staticUrl}/api/v1/todo/gettaskById/${id}`);
     console.log(res);
@@ -89,4 +89,19 @@ export const getTaskbyid=async(id)=>{
     console.log(error);
     return error;
   }
-}
+};
+
+export const editTask = async (status, id) => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.patch(`${staticUrl}/api/v1/todo/updateTask/${id}`, {
+      status,
+    });
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

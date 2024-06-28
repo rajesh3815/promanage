@@ -1,11 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import Style from "./Card.module.css";
 import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import up from "../../assets/aup.svg";
 import down from "../../assets/adw.svg";
-import { taskContext } from "../../TaskContext";
+import Style from "./Progcard.module.css";
 import { editTask } from "../../api/task";
-const Card = ({ task, collapseAll }) => {
+import { taskContext } from "../../TaskContext";
+const Progcard = ({ task, collapseAll }) => {
   const { taskgets, setTaskgets } = useContext(taskContext);
   const [dotOpen, setDotOpen] = useState(false);
   const [arrowOpen, setArrowOpen] = useState(false);
@@ -43,13 +43,14 @@ const Card = ({ task, collapseAll }) => {
 
     return formattedDate.replace(/\d+/, day + suffix);
   }
+  //---------------
+
   function dateColor(dateString) {
     const dewDate = new Date(dateString).getDate();
     const curDt = new Date().getDate();
     if (!dewDate) return false;
     return dewDate < curDt;
   }
-  //---------------
   const clickHandeler = async (status, id) => {
     const data = await editTask(status, id);
 
@@ -138,13 +139,13 @@ const Card = ({ task, collapseAll }) => {
 
           <div className={Style.btns}>
             <button onClick={() => clickHandeler("backlog", task._id)}>
-              Backlog
+              BACKLOG
             </button>
-            <button onClick={() => clickHandeler("progress", task._id)}>
-              progress
+            <button onClick={() => clickHandeler("todo", task._id)}>
+              TO-DO
             </button>
             <button onClick={() => clickHandeler("done", task._id)}>
-              Done
+              DONE
             </button>
           </div>
         </div>
@@ -153,4 +154,4 @@ const Card = ({ task, collapseAll }) => {
   );
 };
 
-export default Card;
+export default Progcard;
