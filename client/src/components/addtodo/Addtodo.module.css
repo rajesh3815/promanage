@@ -319,3 +319,21 @@
     left: 33%;
     color: red;
 }
+/* Style the checkbox when it's checked */
+.task input[type="checkbox"]:checked {
+    background-color: rgba(23, 162, 184, 1);
+}
+
+/* Style the checkmark */
+.task input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 5px;
+    height: 7px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    margin: 5px 0 0 8px;
+}

@@ -7,6 +7,8 @@ const {
   getTaskById,
   getFilterData,
   editTask,
+  deletTask,
+  updateTask,
 } = require("../controllers/todo");
 const todoRouter = express.Router();
 
@@ -16,4 +18,6 @@ todoRouter.get("/getAnalytics", verifyToken, getAnalytics);
 todoRouter.get("/gettaskById/:id", getTaskById);
 todoRouter.get("/getFilterDatas", verifyToken, getFilterData);
 todoRouter.patch("/updateTask/:id", verifyToken, editTask);
+todoRouter.delete("/deletTask/:id", verifyToken, deletTask);
+todoRouter.patch("/editTask/:id", verifyToken, updateTask);
 module.exports = todoRouter;

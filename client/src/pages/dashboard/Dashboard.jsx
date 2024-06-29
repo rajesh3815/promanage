@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Style from "./Dashboard.module.css";
 import logo from "../../assets/codesandbox.svg";
 import layout from "../../assets/layout.svg";
@@ -10,7 +10,10 @@ import Analytics from "../../components/analytics/Analytics";
 import Setting from "../../components/setting/Setting";
 import Logout from "../../components/logoutmodal/Logout";
 import { useNavigate } from "react-router-dom";
+import { taskContext } from "../../TaskContext";
+import Deletmodal from "../../components/deletmodal/Deletmodal";
 const Dashboard = () => {
+  const { deletmodalOpen, setDeletmodalOpen } = useContext(taskContext);
   const nav = useNavigate();
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -72,6 +75,7 @@ const Dashboard = () => {
         <div className={Style.contentDiv}>{renderContent()}</div>
       </div>
       {isLogout ? <Logout setIsLogout={setIsLogout} /> : ""}
+      {deletmodalOpen ? <Deletmodal /> : ""}
     </>
   );
 };

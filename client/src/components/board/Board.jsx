@@ -4,7 +4,7 @@ import people from "../../assets/people.svg";
 import collapse from "../../assets/codicon_collapse-all.svg";
 import Addmodal from "../addpeoplemodal/Addmodal";
 import Addtodo from "../addtodo/Addtodo";
-import { getAlltasks } from "../../api/task";
+import { getAlltasks, getFilterAlltasks } from "../../api/task";
 import Card from "../taskcard/Card";
 import Backcard from "../backlogcard/Backcard";
 import Progcard from "../progresscard/Progcard";
@@ -12,7 +12,8 @@ import Donecard from "../donecard/Donecard";
 import { taskContext } from "../../TaskContext";
 const options = ["Today", "This week", "This month"];
 const Board = () => {
-  const { taskgets } = useContext(taskContext);
+  const { taskgets, delet, todoModal, setTododModal, isedit } =
+    useContext(taskContext);
   const [selectedOption, setSelectedOption] = useState("This week");
   const [isOpen, setIsOpen] = useState(false);
   const [addpplmodal, setAddpplmodal] = useState(false);
@@ -24,10 +25,10 @@ const Board = () => {
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
     getTaskAll();
-  }, [taskgets]);
+  }, [taskgets, selectedOption, delet, isedit]);
   //getting all tasks through api call
   const getTaskAll = async () => {
-    const data = await getAlltasks();
+    const data = await getFilterAlltasks(selectedOption);
     setTasks(data.tasks);
   };
 
@@ -133,7 +134,7 @@ const Board = () => {
               <p>To do</p>{" "}
               <span style={{ display: "flex" }}>
                 <span
-                  onClick={() => setAddtodoform(true)}
+                  onClick={() => setTododModal(true)}
                   className={Style.plus}
                 >
                   +
@@ -210,7 +211,7 @@ const Board = () => {
         </div>
       </div>
       {addpplmodal ? <Addmodal setAddpplmodal={setAddpplmodal} /> : ""}
-      {addtodoform ? <Addtodo setAddtodoform={setAddtodoform} /> : ""}
+      {todoModal ? <Addtodo /> : ""}
     </>
   );
 };

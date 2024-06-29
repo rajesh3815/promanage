@@ -1,21 +1,38 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useId } from "react";
 import Style from "./Addtodo.module.css";
 const options = ["HIGH PRIORITY", "MODERATE PRIORITY", "LOW PRIORITY"];
 import { RiArrowDropUpLine, RiArrowDropDownLine } from "react-icons/ri";
-import { createTodo, getAllPeople } from "../../api/task";
+import { createTodo, editTodo, getAllPeople } from "../../api/task";
+import { taskContext } from "../../TaskContext";
 
-const Addtodo = ({ setAddtodoform }) => {
+const Addtodo = () => {
+  const { setTododModal, editData, setEditdata, isedit, setIsedit } =
+    useContext(taskContext);
   const [selectedOption, setSelectedOption] = useState(""); //for storing priority
   const [title, setTitle] = useState(""); //for storing title
   const [assign, setAssign] = useState([]);
   const [assignPeople, setAssignPeople] = useState("");
-  const [tasks, setTasks] = useState([]); //for tasks
+  const [tasks, setTasks] = useState([
+    { checked: false, id: Date.now(), text: "" },
+  ]); //for tasks
   const [isOpen, setIsOpen] = useState(false);
+  const [dueDate, setDueDate] = useState("");
   const [err, setErr] = useState("");
   useEffect(() => {
     getPeopledata();
   }, []);
+  useEffect(() => {
+    if (!editData || Object.keys(editData).length === 0) {
+      return;
+    }
+    console.log(editData);
+    setAssignPeople(editData.assignto);
+    setTasks(editData.tasks);
+    setSelectedOption(editData.priority);
+    setTitle(editData.taskName);
+    setDueDate(editData.createdDt);
+  }, [editData]);
   //getting all assigne peoples
   const getPeopledata = async () => {
     const data = await getAllPeople();
@@ -25,14 +42,14 @@ const Addtodo = ({ setAddtodoform }) => {
   //setup for task handle---------------------------
   const handleCheck = (id) => {
     setTasks(
-      tasks.map((task) =>
+      tasks?.map((task) =>
         task.id === id ? { ...task, checked: !task.checked } : task
       )
     );
   };
 
   const handleDelete = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    setTasks(tasks?.filter((task) => task.id !== id));
   };
 
   const handleAddNew = () => {
@@ -42,14 +59,14 @@ const Addtodo = ({ setAddtodoform }) => {
 
   const handleTextChange = (id, newText) => {
     setTasks(
-      tasks.map((task) => (task.id === id ? { ...task, text: newText } : task))
+      tasks?.map((task) => (task.id === id ? { ...task, text: newText } : task))
     );
   };
-  const checkedCount = tasks.filter((task) => task.checked).length;
+  const checkedCount = tasks?.filter((task) => task?.checked)?.length;
   //+-----------------------------------------------------------//
 
   // setting up date----
-  const [dueDate, setDueDate] = useState("");
+
   const dateInputRef = useRef(null);
   const handleDateChange = (event) => {
     setDueDate(event.target.value);
@@ -92,6 +109,54 @@ const Addtodo = ({ setAddtodoform }) => {
     console.log("success");
   };
 
+  //edit handel
+  const editclickHandeler = async () => {
+    if (!title) {
+      setErr("Title field is required");
+      return;
+    } else if (!selectedOption) {
+      setErr("Priority field is required");
+      return;
+    } else {
+      setErr("");
+    }
+    let flg = false;
+    for (let i = 0; i < tasks.length; i++) {
+      if (tasks[i].text.trim() === "") {
+        flg = true;
+        setErr("All fields is required");
+      }
+    }
+    if (flg) return;
+    setErr("");
+    const data = await editTodo(
+      title,
+      selectedOption,
+      dueDate,
+      assignPeople,
+      tasks,
+      editData._id
+    );
+    setIsedit(!isedit)
+    setTododModal(false)
+    setEditdata({});
+    setAssignPeople("");
+    setTasks([]);
+    setSelectedOption("");
+    setTitle("");
+    setDueDate("");
+    console.log(data);
+  };
+
+  const handelCancel = () => {
+    setTododModal(false);
+    setEditdata({});
+    setAssignPeople("");
+    setTasks([]);
+    setSelectedOption("");
+    setTitle("");
+    setDueDate("");
+  };
   return (
     <div className={Style.mainContainer}>
       <div className={Style.innerDiv}>
@@ -226,7 +291,7 @@ const Addtodo = ({ setAddtodoform }) => {
 
           <div className={Style.btnDivright}>
             <button
-              onClick={() => setAddtodoform(false)}
+              onClick={handelCancel}
               style={{
                 color: "rgba(207, 54, 54, 1)",
                 border: "1px solid rgba(207, 54, 54, 1)",
@@ -234,16 +299,29 @@ const Addtodo = ({ setAddtodoform }) => {
             >
               Cancel
             </button>
-            <button
-              onClick={clickHandeler}
-              style={{
-                color: "white",
-                background: "rgba(23, 162, 184, 1)",
-                marginBottom: "1rem",
-              }}
-            >
-              Save
-            </button>
+            {Object.keys(editData).length === 0 ? (
+              <button
+                onClick={clickHandeler}
+                style={{
+                  color: "white",
+                  background: "rgba(23, 162, 184, 1)",
+                  marginBottom: "1rem",
+                }}
+              >
+                Save
+              </button>
+            ) : (
+              <button
+                onClick={editclickHandeler}
+                style={{
+                  color: "white",
+                  background: "rgba(23, 162, 184, 1)",
+                  marginBottom: "1rem",
+                }}
+              >
+                Edit
+              </button>
+            )}
           </div>
         </div>
         <p className={Style.errMessage}>{err}</p>

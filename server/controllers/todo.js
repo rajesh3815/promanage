@@ -3,7 +3,7 @@ const todo = require("../models/todo");
 const addTodo = async (req, res) => {
   const { taskName, priority, assignto, createdDt, tasks } = req.body;
   const userId = req.userId;
-  console.log(req.body);
+
   if (!taskName || !priority || !tasks) {
     return res.status(400).send({
       message: "All fields are requred",
@@ -132,7 +132,7 @@ const getTaskById = async (req, res) => {
   }
 };
 const getFilterData = async (req, res) => {
-  const { filterType } = req.body;
+  const { filterType } = req.query;
   const userId = req.userId;
   if (!filterType) {
     return res.status(400).json({
@@ -170,13 +170,13 @@ const getFilterData = async (req, res) => {
     endOfMonthIST.setUTCMonth(startOfMonthIST.getUTCMonth() + 1);
 
     switch (filterType) {
-      case "today":
+      case "Today":
         filter.createdAt = { $gte: startOfDayIST, $lt: endOfDayIST };
         break;
-      case "this week":
+      case "This week":
         filter.createdAt = { $gte: startOfWeekIST, $lt: endOfWeekIST };
         break;
-      case "this month":
+      case "This month":
         filter.createdAt = { $gte: startOfMonthIST, $lt: endOfMonthIST };
         break;
       default:
@@ -228,6 +228,65 @@ const editTask = async (req, res) => {
   }
 };
 
+const deletTask = async (req, res) => {
+  const { id } = req.params;
+  const userId = req.userId;
+  try {
+    const task = await todo.find({ _id: id, userId });
+    if (!task) {
+      return res.status(400).send({
+        status: "failed",
+        message: "task not found for deletion",
+      });
+    }
+    await todo.findByIdAndDelete(id);
+    res.send({
+      status: 1,
+      message: "task Deleted",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      status: "failed",
+      message: "error in task deletion",
+    });
+  }
+};
+const updateTask = async (req, res) => {
+  const { taskName, priority, assignto, createdDt, tasks } = req.body;
+  const userId = req.userId;
+  const { id } = req.params;
+  if (!taskName || !priority || !tasks) {
+    return res.status(400).send({
+      message: "All fields are requred",
+      status: 0,
+    });
+  }
+  try {
+    const task = await todo.findById(id );
+    if (!task) {
+      return res.status(400).send({
+        status: "failed",
+        message: "task not found for deletion",
+      });
+    }
+    task.taskName = taskName;
+    task.priority = priority;
+    task.assignto = assignto;
+    task.createdDt = createdDt;
+    task.tasks = tasks;
+    await task.save();
+    res.send({
+      message: "task edited successFully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).send({
+      status: "failed",
+      message: "error in task edit",
+    });
+  }
+};
 module.exports = {
   addTodo,
   getAlltodo,
@@ -235,4 +294,6 @@ module.exports = {
   getTaskById,
   getFilterData,
   editTask,
+  deletTask,
+  updateTask,
 };

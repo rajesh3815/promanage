@@ -105,3 +105,59 @@ export const editTask = async (status, id) => {
     return error;
   }
 };
+
+export const getFilterAlltasks = async (filterType) => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.get(`${staticUrl}/api/v1/todo/getFilterDatas`, {
+      params: {
+        filterType: filterType,
+      },
+    });
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const deletTasks = async (id) => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.delete(`${staticUrl}/api/v1/todo/deletTask/${id}`);
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const editTodo = async (
+  title,
+  selectedOption,
+  dueDate,
+  assignPeople,
+  tasks,
+  id
+) => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.patch(`${staticUrl}/api/v1/todo/editTask/${id}`, {
+      taskName: title,
+      priority: selectedOption,
+      assignto: assignPeople,
+      createdDt: dueDate,
+      tasks,
+    });
+    console.log(res);
+    return res.status;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};

@@ -6,7 +6,14 @@ import Style from "./Donecard.module.css";
 import { editTask } from "../../api/task";
 import { taskContext } from "../../TaskContext";
 const Donecard = ({ task, collapseAll }) => {
-  const { taskgets, setTaskgets } = useContext(taskContext);
+  const {
+    taskgets,
+    setTaskgets,
+    setDeletmodalOpen,
+    setDeletId,
+    setTododModal,
+    setEditdata,
+  } = useContext(taskContext);
   const [dotOpen, setDotOpen] = useState(false);
   const [arrowOpen, setArrowOpen] = useState(false);
   useEffect(() => {
@@ -49,6 +56,30 @@ const Donecard = ({ task, collapseAll }) => {
 
     setTaskgets(!taskgets);
   };
+
+  //handle delete
+  const deletHandeler = (id) => {
+    setDeletId(id);
+    setDeletmodalOpen(true);
+    setDotOpen(false);
+  };
+
+  const shareHandeler = async (id) => {
+    const baseUrl = `${window.location.protocol}//${window.location.host}/task/${id}`;
+    try {
+      await navigator.clipboard.writeText(baseUrl);
+      console.log(baseUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const editHandeler = (task) => {
+    setEditdata(task);
+    setTododModal(true);
+    setDotOpen(false);
+  };
+  const checkedCount = task?.tasks?.filter((tasks) => tasks?.checked)?.length;
   return (
     <div className={Style.container}>
       <div className={Style.head}>
@@ -78,9 +109,14 @@ const Donecard = ({ task, collapseAll }) => {
         {dotOpen ? (
           <div className={Style.popup}>
             <ul>
-              <li>Edit</li>
-              <li>Share</li>
-              <li style={{ color: "red" }}>Delete</li>
+              <li onClick={() => editHandeler(task)}>Edit</li>
+              <li onClick={() => shareHandeler(task._id)}>Share</li>
+              <li
+                onClick={() => deletHandeler(task._id)}
+                style={{ color: "red" }}
+              >
+                Delete
+              </li>
             </ul>
           </div>
         ) : (
@@ -93,7 +129,9 @@ const Donecard = ({ task, collapseAll }) => {
       </p>
       <div className={Style.checkList}>
         <div className={Style.checkListHero}>
-          <p>Checklist (0/3)</p>
+          <p>
+            Checklist ({checkedCount}/{task?.tasks?.length})
+          </p>
           <span onClick={() => setArrowOpen(!arrowOpen)}>
             {arrowOpen ? <img src={up}></img> : <img src={down}></img>}
           </span>
