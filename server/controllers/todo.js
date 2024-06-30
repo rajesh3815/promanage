@@ -99,7 +99,7 @@ const getAnalytics = async (req, res) => {
       analytics,
     });
   } catch (error) {
-    console.error("Error getting analytics:", error);
+    console.log("Error getting analytics:", error);
     res.status(500).json({
       status: 0,
       message: "Error getting analytics",
@@ -134,7 +134,7 @@ const getTaskById = async (req, res) => {
 const getFilterData = async (req, res) => {
   const { filterType, assignto } = req.query;
   const userId = req.userId;
-  console.log(assignto);
+  
   if (!filterType) {
     return res.status(400).json({
       status: 0,
@@ -186,16 +186,16 @@ const getFilterData = async (req, res) => {
       default:
         break;
     }
-    console.log(filter);
+    // console.log(filter);
     const tasks = await todo.find(filter);
-    console.log(assFilter);
+    // console.log(assFilter);
     const ass = await todo.find(assFilter);
     const combinedResults = [...tasks, ...ass];
     res
       .status(200)
       .json({ status: 1, message: "Success", tasks: combinedResults });
   } catch (error) {
-    console.error("Error in getFilterData:", error);
+    console.log("Error in getFilterData:", error);
     res.status(500).json({
       status: 0,
       message: "Error in getFilterData",
@@ -228,7 +228,7 @@ const editTask = async (req, res) => {
       message: " edit Success",
     });
   } catch (error) {
-    console.error("Error in edit task:", error);
+    console.log("Error in edit task:", error);
     res.status(500).json({
       status: 0,
       message: "Error in edit task id",
@@ -254,16 +254,16 @@ const editCheck = async (req, res) => {
         message: "task not found ",
       });
     }
-    console.log("before", taskUpdate.tasks[idx].checked);
+   
     taskUpdate.tasks[idx].checked = !taskUpdate.tasks[idx].checked;
-    console.log(taskUpdate.tasks[idx].checked);
+    
     await taskUpdate.save();
     res.json({
       status: 1,
       message: " edit Success",
     });
   } catch (error) {
-    console.error("Error in edit task:", error);
+    console.log("Error in edit task:", error);
     res.status(500).json({
       status: 0,
       message: "Error in edit task id",

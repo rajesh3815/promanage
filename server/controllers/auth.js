@@ -65,7 +65,7 @@ const loginUser = async (req, res) => {
       );
       return res.send({
         name: isUserExist.name,
-        email:isUserExist.email,
+        email: isUserExist.email,
         status: 200,
         message: "successfully loged-in",
         token,
@@ -95,14 +95,14 @@ const updateUser = async (req, res) => {
     }
 
     // Update user details
-    if (name?.trim()!=="") {
+    if (name?.trim() !== "") {
       userToUpdate.name = name;
     }
-    if (password?.trim()!=="") {
+    if (password?.trim() !== "") {
       const encryptedPassword = await bcrypt.hash(password, 10);
       userToUpdate.password = encryptedPassword;
     }
-    if (email?.trim()!=="") {
+    if (email?.trim() !== "") {
       userToUpdate.email = email;
     }
     await userToUpdate.save();
@@ -122,7 +122,6 @@ const updateUser = async (req, res) => {
 
 const getUser = async (req, res) => {
   const userId = req.userId;
-  console.log(userId);
   try {
     const userData = await user.findById(userId, "name email");
     if (!userData) {
