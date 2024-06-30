@@ -5,6 +5,8 @@ import up from "../../assets/aup.svg";
 import down from "../../assets/adw.svg";
 import { taskContext } from "../../TaskContext";
 import { editCheck, editTask } from "../../api/task";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Card = ({ task, collapseAll }) => {
   const {
     taskgets,
@@ -75,6 +77,17 @@ const Card = ({ task, collapseAll }) => {
     const baseUrl = `${window.location.protocol}//${window.location.host}/task/${id}`;
     try {
       await navigator.clipboard.writeText(baseUrl);
+      toast.success("link copied", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
       console.log(baseUrl);
     } catch (error) {
       console.log(error);
@@ -193,6 +206,7 @@ const Card = ({ task, collapseAll }) => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

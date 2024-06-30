@@ -12,7 +12,7 @@ import Donecard from "../donecard/Donecard";
 import { taskContext } from "../../TaskContext";
 const options = ["Today", "This week", "This month"];
 const Board = () => {
-  const { taskgets, delet, todoModal, setTododModal, isedit } =
+  const { taskgets, delet, todoModal, setTododModal, isedit,addtogle } =
     useContext(taskContext);
   const [selectedOption, setSelectedOption] = useState("This week");
   const [isOpen, setIsOpen] = useState(false);
@@ -25,7 +25,7 @@ const Board = () => {
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
     getTaskAll();
-  }, [taskgets, selectedOption, delet, isedit]);
+  }, [taskgets, selectedOption, delet, isedit,addtogle]);
   //getting all tasks through api call
   const getTaskAll = async () => {
     const data = await getFilterAlltasks(selectedOption);

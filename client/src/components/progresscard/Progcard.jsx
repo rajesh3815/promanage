@@ -5,6 +5,8 @@ import down from "../../assets/adw.svg";
 import Style from "./Progcard.module.css";
 import { editCheck, editTask } from "../../api/task";
 import { taskContext } from "../../TaskContext";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Progcard = ({ task, collapseAll }) => {
   const {
     taskgets,
@@ -77,7 +79,18 @@ const Progcard = ({ task, collapseAll }) => {
     const baseUrl = `${window.location.protocol}//${window.location.host}/task/${id}`;
     try {
       await navigator.clipboard.writeText(baseUrl);
-      console.log(baseUrl);
+      toast.success("link copied", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
+      // console.log(baseUrl);
     } catch (error) {
       console.log(error);
     }
@@ -111,7 +124,7 @@ const Progcard = ({ task, collapseAll }) => {
             <span>{task?.priority}</span>
           </div>
           {task?.assignto && (
-            <span title={task?.assignto}  className={Style.assignSpan}>
+            <span title={task?.assignto} className={Style.assignSpan}>
               {task?.assignto.slice(0, 2)}
             </span>
           )}
@@ -195,6 +208,7 @@ const Progcard = ({ task, collapseAll }) => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

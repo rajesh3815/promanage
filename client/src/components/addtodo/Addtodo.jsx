@@ -5,10 +5,18 @@ const options = ["HIGH PRIORITY", "MODERATE PRIORITY", "LOW PRIORITY"];
 import { RiArrowDropUpLine, RiArrowDropDownLine } from "react-icons/ri";
 import { createTodo, editTodo, getAllPeople } from "../../api/task";
 import { taskContext } from "../../TaskContext";
+import toast, { Toaster } from 'react-hot-toast';
 
 const Addtodo = () => {
-  const { setTododModal, editData, setEditdata, isedit, setIsedit } =
-    useContext(taskContext);
+  const {
+    setTododModal,
+    editData,
+    setEditdata,
+    isedit,
+    setIsedit,
+    addtogle,
+    setAddtogle,
+  } = useContext(taskContext);
   const [selectedOption, setSelectedOption] = useState(""); //for storing priority
   const [title, setTitle] = useState(""); //for storing title
   const [assign, setAssign] = useState([]);
@@ -80,7 +88,7 @@ const Addtodo = () => {
   }; //handeling for priority check
 
   //form submit handel
-  const clickHandeler = () => {
+  const clickHandeler = async () => {
     if (!title) {
       setErr("Title field is required");
       return;
@@ -99,13 +107,17 @@ const Addtodo = () => {
     }
     if (flg) return;
     setErr("");
-    const data = createTodo(
+    const data = await createTodo(
       title,
       selectedOption,
       dueDate,
       assignPeople,
       tasks
     );
+    toast.success('Successfully added!')
+    setTododModal(false);
+    setAddtogle(!addtogle);
+    
     console.log("success");
   };
 
@@ -137,6 +149,7 @@ const Addtodo = () => {
       tasks,
       editData._id
     );
+    toast.success('Successfully edited!')
     setIsedit(!isedit);
     setTododModal(false);
     setEditdata({});
@@ -332,6 +345,7 @@ const Addtodo = () => {
         </div>
         <p className={Style.errMessage}>{err}</p>
       </div>
+      
     </div>
   );
 };

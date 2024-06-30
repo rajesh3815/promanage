@@ -10,6 +10,7 @@ export const ContextProvider = ({ children }) => {
   const [deletId, setDeletId] = useState("");
   const [editData, setEditdata] = useState({});
   const [isedit, setIsedit] = useState(false);
+  const [addtogle, setAddtogle] = useState(false);
   return (
     <>
       <taskContext.Provider
@@ -28,6 +29,8 @@ export const ContextProvider = ({ children }) => {
           setEditdata,
           isedit,
           setIsedit,
+          addtogle,
+          setAddtogle,
         }}
       >
         {children}

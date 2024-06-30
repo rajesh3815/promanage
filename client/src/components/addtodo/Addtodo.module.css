@@ -8,6 +8,7 @@
     align-items: center;
     justify-content: center;
     background-color: rgba(48, 61, 67, 0.55);
+    z-index: 10;
 }
 
 .innerDiv {
@@ -17,6 +18,7 @@
     height: 30rem;
     width: 31rem;
     position: relative;
+   
 }
 
 .innerDivinp {

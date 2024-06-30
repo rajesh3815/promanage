@@ -7,7 +7,8 @@ import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
 import { getuser, updateUser } from "../../auth/auth";
 import { useNavigate } from "react-router-dom";
-
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 const Setting = () => {
   const nav = useNavigate();
   const [togglPassword, setTogglPassword] = useState(false);
@@ -69,6 +70,17 @@ const Setting = () => {
     }
     setErrordata({ name: "", password: "", email: "", oldpassword: "" });
     await updateUser(formData);
+    toast.success("updated successfully", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      transition: Bounce,
+    });
     if (formData.email !== "" || formData.password !== "") {
       localStorage.removeItem("token");
       localStorage.removeItem("userId");
@@ -216,6 +228,7 @@ const Setting = () => {
           <button className={Style.btn}>Update</button>
         </div>
       </form>
+      <ToastContainer />
     </div>
   );
 };
