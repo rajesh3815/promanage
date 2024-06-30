@@ -113,6 +113,7 @@ export const getFilterAlltasks = async (filterType) => {
     const res = await axios.get(`${staticUrl}/api/v1/todo/getFilterDatas`, {
       params: {
         filterType: filterType,
+        assignto: localStorage.getItem("UserEmail"),
       },
     });
     console.log(res);
@@ -156,6 +157,21 @@ export const editTodo = async (
     });
     console.log(res);
     return res.status;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const editCheck = async (idx, id) => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.patch(`${staticUrl}/api/v1/todo/editCheck/${id}`, {
+      idx,
+    });
+    console.log(res);
+    return res.data;
   } catch (error) {
     console.log(error);
     return error;

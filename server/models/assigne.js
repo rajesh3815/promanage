@@ -6,6 +6,10 @@ const assignSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+    userId: {
+      type: mongoose.ObjectId,
+      required: true,
+    },
   },
   { timestamps: { createdAt: "", updatedAt: "" } }
 );

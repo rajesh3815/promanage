@@ -1,6 +1,7 @@
 const assign = require("../models/assigne");
 
 const addPeople = async (req, res) => {
+  const userId = req.userId;
   const { people } = req.body;
   if (!people) {
     return res.status(400).send({
@@ -9,7 +10,7 @@ const addPeople = async (req, res) => {
     });
   }
   try {
-    const isExist = await assign.findOne({ people });
+    const isExist = await assign.findOne({ people, userId });
     if (isExist) {
       return res.send({
         message: "assign people Already exist",
@@ -18,6 +19,7 @@ const addPeople = async (req, res) => {
     }
     const newAssign = new assign({
       people,
+      userId,
     });
     await newAssign.save();
     res.send({
@@ -34,8 +36,9 @@ const addPeople = async (req, res) => {
 };
 
 const getAllpeople = async (req, res) => {
+  const userId = req.userId;
   try {
-    const peoples = await assign.find({});
+    const peoples = await assign.find({ userId });
     res.send({
       message: "success",
       peoples,

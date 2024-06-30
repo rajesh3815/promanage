@@ -1,5 +1,20 @@
 const mongoose = require("mongoose");
 
+const taskSchema = new mongoose.Schema({
+  id: {
+    type: Number,
+    required: true,
+  },
+  text: {
+    type: String,
+    required: true,
+  },
+  checked: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const todoSchema = new mongoose.Schema(
   {
     userId: {
@@ -8,11 +23,11 @@ const todoSchema = new mongoose.Schema(
     },
     taskName: {
       type: String,
-      require: true,
+      required: true,
     },
     priority: {
       type: String,
-      require: true,
+      required: true,
     },
     assignto: {
       type: String,
@@ -21,7 +36,7 @@ const todoSchema = new mongoose.Schema(
       type: String,
     },
     tasks: {
-      type: Array,
+      type: [taskSchema],
       required: true,
     },
     todoStatus: {

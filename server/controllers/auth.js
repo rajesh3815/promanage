@@ -65,6 +65,7 @@ const loginUser = async (req, res) => {
       );
       return res.send({
         name: isUserExist.name,
+        email:isUserExist.email,
         status: 200,
         message: "successfully loged-in",
         token,
@@ -82,13 +83,7 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { name, password, email } = req.body;
-  const userId = req.userId; 
-  if (!name || !password || !email) {
-    return res.status(400).send({
-      message: "All fields are required",
-      status: 0,
-    });
-  }
+  const userId = req.userId;
 
   try {
     const userToUpdate = await user.findById(userId);
@@ -100,14 +95,16 @@ const updateUser = async (req, res) => {
     }
 
     // Update user details
-    userToUpdate.name = name;
-    userToUpdate.email = email;
-
-    if (password) {
+    if (name?.trim()!=="") {
+      userToUpdate.name = name;
+    }
+    if (password?.trim()!=="") {
       const encryptedPassword = await bcrypt.hash(password, 10);
       userToUpdate.password = encryptedPassword;
     }
-
+    if (email?.trim()!=="") {
+      userToUpdate.email = email;
+    }
     await userToUpdate.save();
 
     res.send({
@@ -123,4 +120,26 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser ,updateUser};
+const getUser = async (req, res) => {
+  const userId = req.userId;
+  console.log(userId);
+  try {
+    const userData = await user.findById(userId, "name email");
+    if (!userData) {
+      res.status(400).json({
+        message: "failed user doesnot exist",
+      });
+    }
+    res.send({
+      message: "success",
+      userData,
+    });
+  } catch (error) {
+    res.status(400).send({
+      message: "Error in getUser data",
+      status: 0,
+    });
+    console.log("Error in getUser data:)", error);
+  }
+};
+module.exports = { registerUser, loginUser, updateUser, getUser };

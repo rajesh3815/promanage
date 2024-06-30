@@ -3,7 +3,7 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import up from "../../assets/aup.svg";
 import down from "../../assets/adw.svg";
 import Style from "./Donecard.module.css";
-import { editTask } from "../../api/task";
+import { editCheck, editTask } from "../../api/task";
 import { taskContext } from "../../TaskContext";
 const Donecard = ({ task, collapseAll }) => {
   const {
@@ -13,6 +13,8 @@ const Donecard = ({ task, collapseAll }) => {
     setDeletId,
     setTododModal,
     setEditdata,
+    isedit,
+    setIsedit,
   } = useContext(taskContext);
   const [dotOpen, setDotOpen] = useState(false);
   const [arrowOpen, setArrowOpen] = useState(false);
@@ -79,6 +81,11 @@ const Donecard = ({ task, collapseAll }) => {
     setTododModal(true);
     setDotOpen(false);
   };
+  const handleCheck = async (id, idx) => {
+    console.log(id);
+    await editCheck(idx, id);
+    setIsedit(!isedit);
+  };
   const checkedCount = task?.tasks?.filter((tasks) => tasks?.checked)?.length;
   return (
     <div className={Style.container}>
@@ -97,7 +104,7 @@ const Donecard = ({ task, collapseAll }) => {
             <span>{task?.priority}</span>
           </div>
           {task?.assignto && (
-            <span className={Style.assignSpan}>
+            <span title={task?.assignto}  className={Style.assignSpan}>
               {task?.assignto.slice(0, 2)}
             </span>
           )}
@@ -143,7 +150,7 @@ const Donecard = ({ task, collapseAll }) => {
                   <input
                     type="checkbox"
                     checked={todo.checked}
-                    // onChange={() => handleCheck(task.id)}
+                    onChange={() => handleCheck(task._id, index)}
                   />
                   <p>{todo.text}</p>
                 </div>

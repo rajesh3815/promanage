@@ -132,8 +132,9 @@ const getTaskById = async (req, res) => {
   }
 };
 const getFilterData = async (req, res) => {
-  const { filterType } = req.query;
+  const { filterType, assignto } = req.query;
   const userId = req.userId;
+  console.log(assignto);
   if (!filterType) {
     return res.status(400).json({
       status: 0,
@@ -142,7 +143,7 @@ const getFilterData = async (req, res) => {
   }
   try {
     let filter = { userId };
-
+    let assFilter = { assignto };
     const now = new Date();
     const offset = 5.5 * 60 * 60 * 1000;
 
@@ -172,19 +173,27 @@ const getFilterData = async (req, res) => {
     switch (filterType) {
       case "Today":
         filter.createdAt = { $gte: startOfDayIST, $lt: endOfDayIST };
+        assFilter.createdAt = { $gte: startOfDayIST, $lt: endOfDayIST };
         break;
       case "This week":
         filter.createdAt = { $gte: startOfWeekIST, $lt: endOfWeekIST };
+        assFilter.createdAt = { $gte: startOfWeekIST, $lt: endOfWeekIST };
         break;
       case "This month":
         filter.createdAt = { $gte: startOfMonthIST, $lt: endOfMonthIST };
+        assFilter.createdAt = { $gte: startOfMonthIST, $lt: endOfMonthIST };
         break;
       default:
         break;
     }
     console.log(filter);
     const tasks = await todo.find(filter);
-    res.status(200).json({ status: 1, message: "Success", tasks });
+    console.log(assFilter);
+    const ass = await todo.find(assFilter);
+    const combinedResults = [...tasks, ...ass];
+    res
+      .status(200)
+      .json({ status: 1, message: "Success", tasks: combinedResults });
   } catch (error) {
     console.error("Error in getFilterData:", error);
     res.status(500).json({
@@ -213,6 +222,41 @@ const editTask = async (req, res) => {
   try {
     const taskUpdate = await todo.findOne({ _id: id });
     taskUpdate.todoStatus = status;
+    await taskUpdate.save();
+    res.json({
+      status: 1,
+      message: " edit Success",
+    });
+  } catch (error) {
+    console.error("Error in edit task:", error);
+    res.status(500).json({
+      status: 0,
+      message: "Error in edit task id",
+      error: error.message,
+    });
+  }
+};
+
+const editCheck = async (req, res) => {
+  const { idx } = req.body;
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({
+      status: 1,
+      message: "No id",
+    });
+  }
+  try {
+    const taskUpdate = await todo.findOne({ _id: id });
+    if (!taskUpdate) {
+      return res.status(400).send({
+        status: "failed",
+        message: "task not found ",
+      });
+    }
+    console.log("before", taskUpdate.tasks[idx].checked);
+    taskUpdate.tasks[idx].checked = !taskUpdate.tasks[idx].checked;
+    console.log(taskUpdate.tasks[idx].checked);
     await taskUpdate.save();
     res.json({
       status: 1,
@@ -263,11 +307,11 @@ const updateTask = async (req, res) => {
     });
   }
   try {
-    const task = await todo.findById(id );
+    const task = await todo.findById(id);
     if (!task) {
       return res.status(400).send({
         status: "failed",
-        message: "task not found for deletion",
+        message: "task not found for edit",
       });
     }
     task.taskName = taskName;
@@ -296,4 +340,5 @@ module.exports = {
   editTask,
   deletTask,
   updateTask,
+  editCheck,
 };

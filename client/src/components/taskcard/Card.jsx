@@ -4,7 +4,7 @@ import { HiOutlineDotsHorizontal } from "react-icons/hi";
 import up from "../../assets/aup.svg";
 import down from "../../assets/adw.svg";
 import { taskContext } from "../../TaskContext";
-import { editTask } from "../../api/task";
+import { editCheck, editTask } from "../../api/task";
 const Card = ({ task, collapseAll }) => {
   const {
     taskgets,
@@ -13,6 +13,8 @@ const Card = ({ task, collapseAll }) => {
     setDeletId,
     setTododModal,
     setEditdata,
+    isedit,
+    setIsedit,
   } = useContext(taskContext);
   const [dotOpen, setDotOpen] = useState(false);
   const [arrowOpen, setArrowOpen] = useState(false);
@@ -84,6 +86,11 @@ const Card = ({ task, collapseAll }) => {
     setTododModal(true);
     setDotOpen(false);
   };
+  const handleCheck = async (id, idx) => {
+    console.log(id);
+    await editCheck(idx, id);
+    setIsedit(!isedit);
+  };
   const checkedCount = task?.tasks?.filter((tasks) => tasks?.checked)?.length;
   return (
     <div className={Style.container}>
@@ -102,7 +109,7 @@ const Card = ({ task, collapseAll }) => {
             <span>{task?.priority}</span>
           </div>
           {task?.assignto && (
-            <span className={Style.assignSpan}>
+            <span title={task?.assignto} className={Style.assignSpan}>
               {task?.assignto.slice(0, 2)}
             </span>
           )}
@@ -148,7 +155,7 @@ const Card = ({ task, collapseAll }) => {
                   <input
                     type="checkbox"
                     checked={todo.checked}
-                    // onChange={() => handleCheck(task.id)}
+                    onChange={() => handleCheck(task._id, index)}
                   />
                   <p>{todo.text}</p>
                 </div>

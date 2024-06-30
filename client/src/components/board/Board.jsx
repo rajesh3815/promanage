@@ -69,7 +69,7 @@ const Board = () => {
       <div className={Style.mainContainer}>
         <div className={Style.header}>
           <div className={Style.heroLeft}>
-            <p>Welcome Kumar!</p>
+            <p>Welcome {localStorage.getItem("UserName")}</p>
             <div className={Style.addPpl}>
               <p>Board</p>{" "}
               <span onClick={() => setAddpplmodal(true)}>

@@ -25,10 +25,41 @@ export const loginUser = async ({ password, email }) => {
     console.log(response.data.status);
     localStorage.setItem("token", response.data.token);
     localStorage.setItem("UserName", response.data.name);
+    localStorage.setItem("UserEmail", response.data.email);
     localStorage.setItem("userId", response.data.userId);
     return response.data.status;
   } catch (error) {
     console.log(error.response.data.status);
     return error.response.data.status;
+  }
+};
+
+export const getuser = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.get(`${staticUrl}/api/v1/user/getUser`);
+    console.log(res);
+    return res.data.userData;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export const updateUser = async ({ name, password, email }) => {
+  try {
+    const token = localStorage.getItem("token");
+    axios.defaults.headers.common["Authorization"] = token;
+    const res = await axios.patch(`${staticUrl}/api/v1/user/updateUser`, {
+      name,
+      password,
+      email,
+    });
+    console.log(res);
+    return res.data;
+  } catch (error) {
+    console.log(error);
+    return error;
   }
 };

@@ -1,13 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Style from "./Setting.module.css";
 import { IoPersonOutline } from "react-icons/io5";
 import { CiLock } from "react-icons/ci";
 import { CiMail } from "react-icons/ci";
 import { IoEyeOutline } from "react-icons/io5";
 import { IoEyeOffOutline } from "react-icons/io5";
+import { getuser, updateUser } from "../../auth/auth";
+import { useNavigate } from "react-router-dom";
+
 const Setting = () => {
+  const nav = useNavigate();
   const [togglPassword, setTogglPassword] = useState(false);
   const [togglPasswordc, setTogglPasswordc] = useState(false);
+  const [togglEmail, setTogglEmail] = useState(false);
   const [formData, setFormdata] = useState({
     name: "",
     password: "",
@@ -20,50 +25,65 @@ const Setting = () => {
     email: "",
     oldpassword: "",
   });
-
+  useEffect(() => {
+    gettingData();
+  }, []);
+  const gettingData = async () => {
+    const data = await getuser();
+    setFormdata({
+      name: data.name,
+      email: data.email,
+      password: "",
+      oldpassword: "",
+    });
+  };
   const changeHandeler = (e) => {
     const { name, value } = e.target;
     setFormdata({ ...formData, [name]: value });
   };
-  const registerHandeler = async (e) => {
+  const updateHandeler = async (e) => {
     e.preventDefault();
-    const l = e.target.length;
-    let flg = false;
-    for (let i = 0; i < l - 1; i++) {
-      const { name } = e.target[i];
-
-      if (e.target[i].value.trim() === "") {
-        console.log(e.target[i]);
-        flg = true;
+    if (formData.password.trim() !== "" || formData.oldpassword.trim() !== "") {
+      if (formData.password.trim() === "") {
         setErrordata((prev) => {
-          return { ...prev, [name]: `${name} field is require` };
+          return { ...prev, password: "password cant be empty" };
         });
+        return;
+      } else if (formData.oldpassword.trim() === "") {
+        setErrordata((prev) => {
+          return { ...prev, password: "Oldpassword cant be empty" };
+        });
+        return;
+      }
+      if (formData.password === formData.oldpassword) {
+        console.log(formData.password, formData.oldpassword);
+        setErrordata((prev) => {
+          return { ...prev, password: "password cant be same" };
+        });
+        return;
       } else {
         setErrordata((prev) => {
-          return { ...prev, [name]: "" };
+          return { ...prev, password: "" };
         });
       }
     }
-    if (flg) return;
-    setErrordata({ name: "", password: "", email: "" });
-    if (formData.password === formData.oldpassword) {
-      console.log(formData.password,formData.oldpassword);
-      setErrordata((prev) => {
-        return { ...prev, password: "password cant be same" };
-      });
-      return;
-    } else {
-      setErrordata((prev) => {
-        return { ...prev, oldpassword: "" };
-      });
+    setErrordata({ name: "", password: "", email: "", oldpassword: "" });
+    await updateUser(formData);
+    if (formData.email !== "" || formData.password !== "") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userId");
+      localStorage.removeItem("UserEmail");
+      localStorage.removeItem("UserName");
+      nav("/");
     }
+
     console.log(formData);
   };
-
+  const handeler = () => {};
   return (
     <div className={Style.container}>
       <p className={Style.head}>Settings</p>
-      <form onSubmit={registerHandeler}>
+      <form onSubmit={updateHandeler}>
         <div className={Style.inputDiv}>
           <span style={{ marginTop: "4px" }}>
             <IoPersonOutline
@@ -86,12 +106,33 @@ const Setting = () => {
             />
           </span>
           <input
-            type="text"
+            type={togglEmail ? "text" : "password"}
             placeholder="Updated Email"
             name="email"
             value={formData.email}
             onChange={changeHandeler}
           />
+          <span style={{ marginTop: "4px" }}>
+            {togglEmail ? (
+              <IoEyeOffOutline
+                onClick={() => setTogglEmail(false)}
+                style={{
+                  color: "gray",
+                  width: "1.5rem",
+                  height: "1.5rem",
+                }}
+              />
+            ) : (
+              <IoEyeOutline
+                onClick={() => setTogglEmail(true)}
+                style={{
+                  color: "gray",
+                  width: "1.5rem",
+                  height: "1.5rem",
+                }}
+              />
+            )}
+          </span>
         </div>
         <p style={{ color: "red", marginBottom: "10px" }}>{errordata.email}</p>
         <div className={Style.inputDiv}>

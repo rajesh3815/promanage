@@ -7,6 +7,7 @@ const Logout = ({ setIsLogout }) => {
   const logoutHandeler = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("UserEmail")
     localStorage.removeItem("UserName");
     nav("/");
   };

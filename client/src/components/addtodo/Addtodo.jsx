@@ -137,8 +137,8 @@ const Addtodo = () => {
       tasks,
       editData._id
     );
-    setIsedit(!isedit)
-    setTododModal(false)
+    setIsedit(!isedit);
+    setTododModal(false);
     setEditdata({});
     setAssignPeople("");
     setTasks([]);
@@ -156,6 +156,10 @@ const Addtodo = () => {
     setSelectedOption("");
     setTitle("");
     setDueDate("");
+  };
+  const assignHandel = (people) => {
+    setAssignPeople(people);
+    setIsOpen(!isOpen);
   };
   return (
     <div className={Style.mainContainer}>
@@ -214,21 +218,23 @@ const Addtodo = () => {
               </span>
             </div>
           </div>
-          <div className={Style.dropDiv}>
-            {isOpen && (
-              <ul className={Style.dropdownMenu}>
-                {assign?.map((assign) => (
-                  <li key={assign._id}>
-                    <span>{assign.people?.slice(0, 2)}</span>
-                    {assign.people}
-                    <button onClick={() => setAssignPeople(assign.people)}>
-                      Assign
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {assign.length !== 0 && (
+            <div className={Style.dropDiv}>
+              {isOpen && (
+                <ul className={Style.dropdownMenu}>
+                  {assign?.map((assign) => (
+                    <li key={assign._id}>
+                      <span>{assign.people?.slice(0, 2)}</span>
+                      {assign.people}
+                      <button onClick={() => assignHandel(assign.people)}>
+                        Assign
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
         </div>
 
         {/* task div */}
